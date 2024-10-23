@@ -1,18 +1,21 @@
 import uvicorn
 from fastapi import FastAPI
+import asyncio
 
-app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+from src.presentation.api.v1.rabbitmq_handler import start_rabbitmq_listener
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+
+async def lifespan(app: FastAPI):
+    task = asyncio.create_task(start_rabbitmq_listener())
+
+    yield
+
+    task.cancel()
+
+app = FastAPI(lifespan=lifespan)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host='localhost', port=8000)
+    uvicorn.run(app, host='localhost', port=8001)
+
