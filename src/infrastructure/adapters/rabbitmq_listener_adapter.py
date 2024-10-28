@@ -4,12 +4,14 @@ import json
 import pika
 import threading
 
+from src.application.use_cases.auth_use_case import AuthUseCase
 from src.infrastructure.interfaces.queue_listener_interface import IQueueListener
 
 
 class RabbitMQListenerAdapter(IQueueListener):
-    def __init__(self, queue_name: str) -> None:
+    def __init__(self, queue_name: str, auth_use_case: AuthUseCase) -> None:
         self.queue_name = queue_name
+        self.auth_use_case = auth_use_case
         self.routes = {
             'AUTH.register': self.call_register,
             'AUTH.login': self.call_login,
@@ -48,12 +50,11 @@ class RabbitMQListenerAdapter(IQueueListener):
 
             response = loop.run_until_complete(self.routes[routing_key](data))
 
-            response_body = response.body.decode("utf-8")
-            response_status = response.status_code
+            response_data = response.dict()
 
             response_message = json.dumps({
-                "status_code": response_status,
-                "body": json.loads(response_body)
+                "status_code": 200,
+                "body": response_data
             })
 
             ch.basic_publish(
@@ -70,17 +71,14 @@ class RabbitMQListenerAdapter(IQueueListener):
             print(f"Unknown routing key: {routing_key}")
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
-    @staticmethod
-    async def call_register(data):
+    async def call_register(self, data):
         from src.presentation.api.v1.auth_routes import register
-        return await register(data)
+        return await register(data, self.auth_use_case)
 
-    @staticmethod
-    async def call_login(data):
+    async def call_login(self, data):
         from src.presentation.api.v1.auth_routes import login
-        return await login(data)
+        return await login(data, self.auth_use_case)
 
-    @staticmethod
-    async def call_refresh(data):
+    async def call_refresh(self, data):
         from src.presentation.api.v1.auth_routes import refresh
-        return await refresh(data)
+        return await refresh(data, self.auth_use_case)
