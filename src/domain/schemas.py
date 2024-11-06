@@ -20,19 +20,25 @@ class UserFromDB(BaseModel):
     first_name: str
     last_name: str
     middle_name: str
-    password: str
+    email: EmailStr
+    phone_number: str
+    role: str
 
 
 class UserToDB(BaseModel):
     first_name: str
     last_name: str
     middle_name: str
+    email: EmailStr
+    phone_number: str
     password: str
+    role: str
 
 class RegisterRequestForm(BaseModel):
     first_name: str
     last_name: str
     middle_name: str
+    email: EmailStr
     phone_number: str
     password: str
     role: str

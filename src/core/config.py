@@ -20,7 +20,10 @@ class Settings(BaseModel):
     access_token_expire_time: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
     refresh_token_expire_time: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS"))
 
-    print(jwt_private_secret_key)
+    RABBITMQ_LOGIN: str = os.getenv('RABBITMQ_LOGIN')
+    RABBITMQ_PASSWORD: str = os.getenv('RABBITMQ_PASSWORD')
+    RABBITMQ_HOST: str = os.getenv('RABBITMQ_HOST')
+    RABBITMQ_PORT: int = int(os.getenv('RABBITMQ_PORT'))
 
     def get_db_url(self, db_driver: str = db_driver) -> str:
         """
@@ -30,6 +33,10 @@ class Settings(BaseModel):
             str: Database URL.
         """
         return f"{db_driver}://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_database}"
+
+    @property
+    def rabbitmq_url(self) -> str:
+        return f'amqp://{self.RABBITMQ_LOGIN}:{self.RABBITMQ_PASSWORD}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}/'
 
 
 settings = Settings()

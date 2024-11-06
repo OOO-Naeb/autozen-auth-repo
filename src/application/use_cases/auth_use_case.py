@@ -1,11 +1,9 @@
 from typing import Annotated
-
-import jwt
 from fastapi import Depends
 
 from src.core.jwt_service import JWTService
 from src.domain.exceptions import NotFoundException, UnauthorizedException
-from src.domain.schemas import LoginRequestForm, Tokens, RefreshToken
+from src.domain.schemas import LoginRequestForm, Tokens, RefreshToken, RegisterRequestForm, UserFromDB
 from src.infrastructure.adapters.rabbitmq_user_adapter import RabbitMQUserAdapter
 from src.infrastructure.interfaces.user_adapter_interface import IUserAdapter
 
@@ -44,3 +42,6 @@ class AuthUseCase:
         new_refresh_token = await self.jwt_service.generate_refresh_token(refresh_token_payload['sub'], refresh_token_payload['roles'])
 
         return Tokens(access_token=new_access_token, refresh_token=new_refresh_token)
+
+    async def register(self, data: dict) -> UserFromDB:
+        return UserFromDB(id=1, **data)
