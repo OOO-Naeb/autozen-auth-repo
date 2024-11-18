@@ -1,5 +1,5 @@
 from src.application.use_cases.auth_use_case import AuthUseCase
-from src.domain.schemas import Tokens, LoginRequestForm, RegisterRequestForm, UserFromDB
+from src.domain.schemas import Tokens, LoginRequestForm, UserFromDB
 
 
 async def login(data: LoginRequestForm, auth_use_case: AuthUseCase) -> Tokens:
