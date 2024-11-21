@@ -52,7 +52,7 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
             queue = await self.channel.declare_queue(queue_name, durable=True)
             await queue.bind(self.exchange_name, routing_key)
             await queue.consume(self._create_callback(handler))
-            self.logger.info(
+            print(
                 f"[*] Queue '{queue_name}' is bound to exchange '{self.exchange_name}' with routing key '{routing_key}'.")
 
         print(f"[*] Waiting for messages in queues: {list(self.routes.keys())}")
