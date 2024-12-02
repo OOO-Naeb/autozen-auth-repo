@@ -64,7 +64,7 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
                 data = json.loads(message.body)
 
                 # Dev logs
-                print("Correlation ID from receiver ->", message.correlation_id)
+                print("Correlation ID from sender ->", message.correlation_id)
                 print("To send back to:", message.reply_to)
 
                 status_code, response = await handler(data)

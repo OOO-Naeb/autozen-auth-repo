@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, model_validator
@@ -15,6 +16,11 @@ class Tokens(AccessToken, RefreshToken):
     pass
 
 
+class RoleEnum(str, Enum):
+    CSS_EMPLOYEE = 'css_employee'
+    CSS_ADMIN = 'css_admin'
+    USER = 'user'
+
 class UserFromDB(BaseModel):
     id: int
     first_name: str
@@ -22,7 +28,7 @@ class UserFromDB(BaseModel):
     middle_name: str
     email: EmailStr
     phone_number: str
-    role: str
+    role: RoleEnum
 
 
 class UserToDB(BaseModel):
@@ -32,7 +38,7 @@ class UserToDB(BaseModel):
     email: EmailStr
     phone_number: str
     password: str
-    role: str
+    role: RoleEnum
 
 class RegisterRequestForm(BaseModel):
     first_name: str
@@ -41,7 +47,7 @@ class RegisterRequestForm(BaseModel):
     email: EmailStr
     phone_number: str
     password: str
-    role: str
+    role: RoleEnum
 
 class LoginRequestForm(BaseModel):
     email: Optional[EmailStr] = None
