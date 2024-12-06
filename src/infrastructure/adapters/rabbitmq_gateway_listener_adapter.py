@@ -4,14 +4,14 @@ from typing import Callable
 
 import aio_pika
 
-from src.application.use_cases.auth_use_case import AuthUseCase
+from src.application.services.auth_service import AuthService
 from src.core.config import settings
 from src.domain.exceptions import SourceUnavailableException
 from src.infrastructure.interfaces.queue_listener_interface import IQueueListener
 
 
 class RabbitMQGatewayListenerAdapter(IQueueListener):
-    def __init__(self, auth_use_case: AuthUseCase) -> None:
+    def __init__(self, auth_use_case: AuthService) -> None:
         self.logger = logging.getLogger(__name__)
         self.auth_use_case = auth_use_case
         self.connection = None

@@ -8,7 +8,7 @@ from src.infrastructure.adapters.rabbitmq_user_adapter import RabbitMQUserAdapte
 from src.infrastructure.interfaces.user_adapter_interface import IUserAdapter
 
 
-class AuthUseCase:
+class AuthService:
     def __init__(self, user_adapter: Annotated[IUserAdapter, Depends(RabbitMQUserAdapter)], jwt_service: Annotated[JWTService, Depends()]):
         self.user_adapter = user_adapter
         self.jwt_service = jwt_service
