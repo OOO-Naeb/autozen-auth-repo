@@ -11,9 +11,9 @@ from src.infrastructure.interfaces.queue_listener_interface import IQueueListene
 
 
 class RabbitMQGatewayListenerAdapter(IQueueListener):
-    def __init__(self, auth_use_case: AuthService) -> None:
+    def __init__(self, auth_service: AuthService) -> None:
         self.logger = logging.getLogger(__name__)
-        self.auth_use_case = auth_use_case
+        self.auth_service = auth_service
         self.connection = None
         self.channel = None
         self.exchange_name = 'GATEWAY-AUTH-EXCHANGE.direct'
@@ -87,14 +87,14 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
     async def call_register(self, data: dict):
         from src.presentation.api.v1.auth_routes import register
 
-        return await register(data, self.auth_use_case)
+        return await register(data, self.auth_service)
 
     async def call_login(self, data):
         from src.presentation.api.v1.auth_routes import login
 
-        return await login(data, self.auth_use_case)
+        return await login(data, self.auth_service)
 
     async def call_refresh(self, data):
         from src.presentation.api.v1.auth_routes import refresh
 
-        return await refresh(data, self.auth_use_case)
+        return await refresh(data, self.auth_service)

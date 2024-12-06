@@ -3,7 +3,7 @@ from fastapi import Depends
 
 from src.core.jwt_service import JWTService
 from src.domain.exceptions import NotFoundException, UnauthorizedException
-from src.domain.schemas import LoginRequestForm, Tokens, RefreshToken, RegisterRequestForm, UserFromDB
+from src.domain.schemas import LoginRequestForm, Tokens, UserFromDB
 from src.infrastructure.adapters.rabbitmq_user_adapter import RabbitMQUserAdapter
 from src.infrastructure.interfaces.user_adapter_interface import IUserAdapter
 

@@ -9,10 +9,10 @@ from src.presentation.api.v1.rabbitmq_handler import start_rabbitmq_listener
 
 user_adapter = RabbitMQUserAdapter()
 jwt_service = JWTService()
-auth_use_case = AuthService(user_adapter=user_adapter, jwt_service=jwt_service)
+auth_service = AuthService(user_adapter=user_adapter, jwt_service=jwt_service)
 
 async def lifespan(app: FastAPI):
-    task = asyncio.create_task(start_rabbitmq_listener(auth_use_case=auth_use_case))
+    task = asyncio.create_task(start_rabbitmq_listener(auth_service=auth_service))
 
     yield
 
