@@ -42,7 +42,7 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
                 self.logger.error(
                     f"RabbitMQ service is unavailable. Connection error. From: RabbitMQListenerAdapter, connect()."
                 )
-                raise SourceUnavailableException(detail="RabbitMQ service is unavailable.")
+                raise SourceUnavailableException()
 
     async def _initialize_queues(self):
         await self.connect()

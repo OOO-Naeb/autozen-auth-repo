@@ -28,7 +28,7 @@ class RabbitMQUserAdapter(IUserAdapter):
         console_handler.setLevel(logging.INFO)
         console_handler.setFormatter(logging.Formatter(log_format, datefmt=date_format))
 
-        file_handler = logging.FileHandler(os.path.join(log_dirs, 'users.log'))
+        file_handler = logging.FileHandler(os.path.join(log_dirs, 'users_log.log'))
         file_handler.setLevel(logging.ERROR)
         file_handler.setFormatter(logging.Formatter(log_format, datefmt=date_format))
 
@@ -53,7 +53,7 @@ class RabbitMQUserAdapter(IUserAdapter):
                 self.connection = await aio_pika.connect_robust(
                     settings.rabbitmq_url,
                     timeout=10,
-                    client_properties={'client_name': 'Auth Service'}
+                    client_properties={'client_name': 'User Service'}
                 )
                 self.channel = self.connection.channel()
                 self.exchange = await self.channel.declare_exchange(
@@ -63,7 +63,7 @@ class RabbitMQUserAdapter(IUserAdapter):
                 self.logger.error(
                     "RabbitMQ service is unavailable. Connection error. From: RabbitMQAuthAdapter, connect()."
                 )
-                raise SourceUnavailableException(detail="RabbitMQ service is unavailable.")
+                raise SourceUnavailableException()
 
 
     async def rpc_call(self, routing_key: str, body: dict, timeout: int = 5) -> tuple:
@@ -122,9 +122,9 @@ class RabbitMQUserAdapter(IUserAdapter):
 
         except asyncio.TimeoutError:
             self.logger.error(
-                f"Timeout while waiting for response from 'UserService' microservice. From: RabbitMQUserAdapter, rpc_call()."
+                "User Service is unavailable. No response. From: RabbitMQUserAdapter, rpc_call()."
             )
-            raise SourceTimeoutException(detail="Timeout waiting for response from 'UserService' microservice.")
+            raise SourceTimeoutException()
 
         finally:
             await callback_queue.cancel(consumer_tag)
@@ -137,9 +137,9 @@ class RabbitMQUserAdapter(IUserAdapter):
         status_code, response_body = await self.rpc_call('USERS.get', body)
 
         if status_code == 403:
-            raise AccessDeniedException(detail="Invalid access token.")
+            raise AccessDeniedException()
         elif status_code == 404:
-            raise NotFoundException(detail="Source was not found.")
+            raise NotFoundException()
         elif status_code >= 400:
             self.logger.error(f"Unknown error in RabbitMQAuthAdapter in get_by_id(): {status_code} | {response_body}")
             raise UnhandledException()
@@ -151,9 +151,9 @@ class RabbitMQUserAdapter(IUserAdapter):
         status_code, response_body = await self.rpc_call('USERS.get', body)
 
         if status_code == 403:
-            raise AccessDeniedException(detail="Invalid access token.")
+            raise AccessDeniedException()
         elif status_code == 404:
-            raise NotFoundException(detail="Source was not found.")
+            raise NotFoundException()
         elif status_code >= 400:
             self.logger.error(f"Unknown error in RabbitMQAuthAdapter in get_by_phone_number(): {status_code} | {response_body}")
             raise UnhandledException()
@@ -165,9 +165,9 @@ class RabbitMQUserAdapter(IUserAdapter):
         status_code, response_body = await self.rpc_call('USERS.get', body)
 
         if status_code == 403:
-            raise AccessDeniedException(detail="Invalid access token.")
+            raise AccessDeniedException()
         elif status_code == 404:
-            raise NotFoundException(detail="Source was not found.")
+            raise NotFoundException()
         elif status_code >= 400:
             self.logger.error(f"Unknown error in RabbitMQAuthAdapter in get_by_email(): {status_code} | {response_body}")
             raise UnhandledException()
@@ -178,9 +178,9 @@ class RabbitMQUserAdapter(IUserAdapter):
         status_code, response_body = await self.rpc_call('USERS.post', data.model_dump())
 
         if status_code == 403:
-            raise AccessDeniedException(detail="Invalid access token.")
+            raise AccessDeniedException()
         elif status_code >= 404:
-            raise NotFoundException(detail="Source was not found.")
+            raise NotFoundException()
         elif status_code >= 400:
             self.logger.error(f"Unknown error in RabbitMQAuthAdapter in add(): {status_code} | {response_body}")
             raise UnhandledException()
