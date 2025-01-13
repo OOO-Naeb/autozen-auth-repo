@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from typing import Callable
 
 import aio_pika
@@ -13,9 +14,30 @@ from src.infrastructure.interfaces.queue_listener_interface import IQueueListene
 class RabbitMQGatewayListenerAdapter(IQueueListener):
     def __init__(self, auth_service: AuthService) -> None:
         self.logger = logging.getLogger(__name__)
+
+        log_dir = "logs"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+
+        log_format = '%(levelname)s:    %(asctime)s - %(name)s: %(message)s'
+        date_format = '%Y-%m-%d %H:%M:%S'
+
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(logging.Formatter(log_format, datefmt=date_format))
+
+        file_handler = logging.FileHandler(os.path.join(log_dir, "api_gateway_log.log"))
+        file_handler.setLevel(logging.ERROR)
+        file_handler.setFormatter(logging.Formatter(log_format, datefmt=date_format))
+
+        self.logger.addHandler(console_handler)
+        self.logger.addHandler(file_handler)
+        self.logger.setLevel(logging.DEBUG)
+
         self.auth_service = auth_service
         self.connection = None
         self.channel = None
+        self.exchange = None
         self.exchange_name = 'GATEWAY-AUTH-EXCHANGE.direct'
         self.routes = {
             'AUTH.register': self.call_register,
@@ -28,6 +50,12 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
         await self._initialize_queues()
 
     async def connect(self):
+        """
+        ADAPTER METHOD: Establish a connection to the RabbitMQ service.
+
+        Raises:
+            SourceUnavailableException: When RabbitMQ service is not available.
+        """
         if not self.connection or self.connection.is_closed:
             try:
                 self.connection = await aio_pika.connect_robust(
@@ -36,13 +64,14 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
                     client_properties={'client_name': 'Auth Service'}
                 )
                 self.channel = await self.connection.channel()
-                await self.channel.declare_exchange(self.exchange_name, aio_pika.ExchangeType.DIRECT, durable=True)
-
-            except aio_pika.exceptions.AMQPConnectionError:
-                self.logger.error(
-                    f"RabbitMQ service is unavailable. Connection error. From: RabbitMQListenerAdapter, connect()."
+                self.exchange = await self.channel.declare_exchange(
+                    self.exchange_name, aio_pika.ExchangeType.DIRECT, durable=True
                 )
-                raise SourceUnavailableException()
+            except aio_pika.exceptions.AMQPConnectionError as e:
+                self.logger.error(
+                    f"RabbitMQ service is unavailable. Connection error: {e}. From: RabbitMQGatewayListenerAdapter, connect()"
+                )
+                raise SourceUnavailableException(detail="RabbitMQ service is unavailable.")
 
     async def _initialize_queues(self):
         await self.connect()

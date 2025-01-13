@@ -3,8 +3,7 @@ import os
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
-# This path might be custom, according to your '.env' file location
-load_dotenv('C:/Users/User/PycharmProjects/autozen-auth-repo/src/.env')
+load_dotenv('src/.env')
 
 
 class Settings(BaseModel):
