@@ -4,5 +4,7 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="jdk" jdkName="Poetry (autozen-auth-repo)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name=".idea" />
+    <orderEntry type="module" module-name="autozen-payment-service-repo" />
   </component>
 </module>

@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from src.application.services.jwt_service import JWTService
-from src.domain.schemas import LoginRequestForm, Tokens, UserFromDB
+from src.domain.schemas import LoginRequestForm, Tokens, UserFromDB, RolesEnum
 from src.infrastructure.adapters.rabbitmq_user_adapter import RabbitMQUserAdapter
 from src.infrastructure.interfaces.user_adapter_interface import IUserAdapter
 
@@ -12,14 +12,20 @@ class AuthService:
         self.user_adapter = user_adapter
         self.jwt_service = jwt_service
 
-    async def login(self, data: dict) -> tuple[int, Tokens]:
+    async def login(self, data: dict) -> tuple[int, Tokens] | None:
         data = LoginRequestForm(**data)
 
         if data.email:
-            new_access_token = await self.jwt_service.generate_access_token(1, {
-                'crs_admin': 'Car Service Station Administrator access.'})
-            new_refresh_token = await self.jwt_service.generate_refresh_token(1, {
-                'crs_admin': 'Car Service Station Administrator access.'})
+            new_access_token = await self.jwt_service.generate_access_token(1, [
+                RolesEnum.USER,
+                RolesEnum.CSS_EMPLOYEE,
+                RolesEnum.CSS_ADMIN
+            ])
+            new_refresh_token = await self.jwt_service.generate_refresh_token(1, [
+                RolesEnum.USER,
+                RolesEnum.CSS_EMPLOYEE,
+                RolesEnum.CSS_ADMIN
+            ])
             return 200, Tokens(access_token=str(new_access_token), refresh_token=str(new_refresh_token))
 
         elif data.phone_number:
@@ -32,10 +38,16 @@ class AuthService:
             # if user_from_db.password != data.password:
             #     raise UnauthorizedException('Credentials do not match. Phone number or password is incorrect.')
 
-            new_access_token = await self.jwt_service.generate_access_token(1, {
-                'crs_admin': 'Car Service Station Administrator access.'})
-            new_refresh_token = await self.jwt_service.generate_refresh_token(1,
-                                {'crs_admin': 'Car Service Station Administrator access.'})
+            new_access_token = await self.jwt_service.generate_access_token(1, [
+                RolesEnum.USER,
+                RolesEnum.CSS_EMPLOYEE,
+                RolesEnum.CSS_ADMIN
+            ])
+            new_refresh_token = await self.jwt_service.generate_refresh_token(1, [
+                RolesEnum.USER,
+                RolesEnum.CSS_EMPLOYEE,
+                RolesEnum.CSS_ADMIN
+            ])
 
             return 200, Tokens(access_token=str(new_access_token), refresh_token=str(new_refresh_token))
 

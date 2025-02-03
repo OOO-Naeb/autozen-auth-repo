@@ -1,9 +1,10 @@
 import json
 import logging
 import os
-from typing import Callable
+from typing import Callable, Annotated
 
 import aio_pika
+from fastapi import Depends
 
 from src.application.services.auth_service import AuthService
 from src.core.config import settings
@@ -11,8 +12,9 @@ from src.domain.exceptions import SourceUnavailableException
 from src.infrastructure.interfaces.queue_listener_interface import IQueueListener
 
 
-class RabbitMQGatewayListenerAdapter(IQueueListener):
-    def __init__(self, auth_service: AuthService) -> None:
+class RabbitMQAPIGatewayListener(IQueueListener):
+    def __init__(self, auth_service: Annotated[AuthService, Depends(AuthService)]) -> None:
+        # Logging setup --------------------------------------------------------------------------------------------- #
         self.logger = logging.getLogger(__name__)
 
         log_dir = "logs"
@@ -33,6 +35,7 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
         self.logger.addHandler(console_handler)
         self.logger.addHandler(file_handler)
         self.logger.setLevel(logging.DEBUG)
+        # ----------------------------------------------------------------------------------------------------------- #
 
         self.auth_service = auth_service
         self.connection = None
@@ -86,7 +89,7 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
 
         print(f"[*] Waiting for messages in queues: {list(self.routes.keys())}")
 
-    def _create_callback(self, handler: Callable,):
+    def _create_callback(self, handler: Callable):
         async def callback(message: aio_pika.IncomingMessage):
             async with message.process():
                 print(f"[X] Received message from {message.routing_key} - {message.body}")
@@ -114,16 +117,10 @@ class RabbitMQGatewayListenerAdapter(IQueueListener):
         return callback
 
     async def call_register(self, data: dict):
-        from src.presentation.api.v1.auth_routes import register
-
-        return await register(data, self.auth_service)
+        return await self.auth_service.register(data)
 
     async def call_login(self, data):
-        from src.presentation.api.v1.auth_routes import login
-
-        return await login(data, self.auth_service)
+        return await self.auth_service.login(data)
 
     async def call_refresh(self, data):
-        from src.presentation.api.v1.auth_routes import refresh
-
-        return await refresh(data, self.auth_service)
+        return await self.auth_service.refresh(data)
