@@ -20,8 +20,8 @@ class InactiveUserError(AuthenticationError):
         super().__init__(message=message, status_code=403)
 
 class InvalidPasswordError(AuthenticationError):
-    """Raised when password verification fails."""
-    def __init__(self, message: str = "Invalid password."):
+    """Raised when hashed_password verification fails."""
+    def __init__(self, message: str = "Invalid hashed_password."):
         super().__init__(message=message, status_code=401)
 
 class TokenGenerationError(AuthenticationError):

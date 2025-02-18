@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../autozen-deployment-configs/.idea/.idea/.idea.iml" filepath="$PROJECT_DIR$/../autozen-deployment-configs/.idea/.idea/.idea.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/autozen-auth-microservice.iml" filepath="$PROJECT_DIR$/.idea/autozen-auth-microservice.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../autozen-payment-service-repo/.idea/autozen-payment-service-repo.iml" filepath="$PROJECT_DIR$/../autozen-payment-service-repo/.idea/autozen-payment-service-repo.iml" />
     </modules>
   </component>
 </project>

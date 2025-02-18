@@ -1,9 +1,4 @@
-class AuthServiceError(Exception):
-    """Base infrastructure exception for Auth Service errors."""
-    def __init__(self, status_code: int, detail: str) -> None:
-        self.status_code = status_code
-        self.detail = detail
-        super().__init__(self.detail)
+from src.core.exceptions import AuthServiceError
 
 
 class RabbitMQError(AuthServiceError):
@@ -13,6 +8,6 @@ class RabbitMQError(AuthServiceError):
 
 
 class UserServiceError(AuthServiceError):
-    """Exception for User Service responses' errors."""
+    """Exception for User Service's responses errors."""
     def __init__(self, detail: str = "An error occurred in the User Service.", status_code: int = 500):
         super().__init__(detail=detail, status_code=status_code)

@@ -1,12 +1,12 @@
 import os
 
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic.v1 import BaseSettings
 
 load_dotenv('src/.env')
 
 
-class Settings(BaseModel):
+class Settings(BaseSettings):
     db_driver: str = os.getenv("DB_DRIVER")
     postgres_user: str = os.getenv("POSTGRES_USER")
     postgres_password: str = os.getenv("POSTGRES_PASSWORD")
@@ -24,9 +24,10 @@ class Settings(BaseModel):
     RABBITMQ_HOST: str = os.getenv('RABBITMQ_HOST')
     RABBITMQ_PORT: int = int(os.getenv('RABBITMQ_PORT'))
 
-    def get_db_url(self, db_driver: str = db_driver) -> str:
+    @property
+    def db_url(self, db_driver: str = db_driver) -> str:
         """
-        Returns a database URL created with 'URL' module from SQL Alchemy.
+        Property that represents a database URL.
 
         Returns:
             str: Database URL.
@@ -35,6 +36,12 @@ class Settings(BaseModel):
 
     @property
     def rabbitmq_url(self) -> str:
+        """
+        Property that represents a RabbitMQ URL.
+
+        Returns:
+            str: RabbitMQ URL.
+        """
         return f'amqp://{self.RABBITMQ_LOGIN}:{self.RABBITMQ_PASSWORD}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}/'
 
 

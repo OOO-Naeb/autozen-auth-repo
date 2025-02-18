@@ -2,7 +2,7 @@ from src.domain.interfaces.auth_service_interface import IAuthService
 
 
 class AuthService(IAuthService):
-    """Service for authentication (password verification)."""
+    """Service for authentication (hashed_password verification)."""
     def __init__(self, password_hasher):
         self._password_hasher = password_hasher
 
