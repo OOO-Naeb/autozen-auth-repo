@@ -4,6 +4,8 @@ import uvicorn
 from fastapi import FastAPI
 import asyncio
 
+from starlette.middleware.base import BaseHTTPMiddleware
+
 from src.application.services.password_hasher import BcryptPasswordHasher
 from src.application.services.auth_service import AuthService
 from src.application.services.jwt_service import JWTService
@@ -11,6 +13,8 @@ from src.application.use_cases.login import LoginUseCase, StubLoginUseCase
 from src.application.use_cases.refresh import RefreshUseCase
 from src.application.use_cases.register import RegisterUseCase
 from src.core.logger import LoggerService
+from src.core.middleware.clients_filter_middleware import IPFilterMiddleware
+from src.core.middleware.exception_middleware import ExceptionMiddleware
 from src.infrastructure.adapters.rabbitmq_api_gateway_listener import RabbitMQApiGatewayListener
 from src.infrastructure.adapters.rabbitmq_user_adapter import RabbitMQUserAdapter
 
@@ -94,6 +98,9 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(IPFilterMiddleware)
+app.add_middleware(BaseHTTPMiddleware, dispatch=ExceptionMiddleware(app=app).dispatch)
 
 if __name__ == "__main__":
     uvicorn.run(app, host='localhost', port=8001)

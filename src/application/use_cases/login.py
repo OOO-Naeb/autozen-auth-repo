@@ -109,7 +109,7 @@ class LoginUseCase:
         ) as e:
             self._logger.info(
                 f"Authentication failed: {str(e)}. "
-                f"User identifier: {credentials.email or credentials.phone_number}"
+                f"User identifier: {credentials.get('email') or credentials.get('phone_number')}"
             )
             raise
         except Exception as e:

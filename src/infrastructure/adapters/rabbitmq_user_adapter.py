@@ -127,7 +127,7 @@ class RabbitMQUserAdapter(IUserAdapter):
             # Cancel the consumer tag
             await callback_queue.cancel(consumer_tag)
 
-    async def get_by_id(self, given_id: int, include_password_hash: bool) -> UserResponseDTO | UserAuthResponseDTO:
+    async def get_by_id(self, given_id: uuid.UUID, include_password_hash: bool) -> UserResponseDTO | UserAuthResponseDTO:
         response = await self._make_rpc_call(
             'getById',
             {"user_id": given_id}
