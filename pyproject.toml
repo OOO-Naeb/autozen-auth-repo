@@ -1,25 +1,20 @@
 [project]
-name = "autozen-auth-repo"
+name = "autozen-auth-microservice"
 version = "0.1.0"
-description = "This is a Auth Service repository created for \"AutoZen\" mobile and web applications."
+description = ""
 authors = [
     {name = "Igor Ruzhilov",email = "iruzhilov@gmail.com"}
 ]
 license = {text = "Apache Liscense 2.0"}
 readme = "README.md"
-requires-python = "^3.12"
+requires-python = ">=3.12,<4.0"
 dependencies = [
     "uvicorn (>=0.34.0,<0.35.0)",
-    "fastapi (>=0.115.6,<0.116.0)",
-    "aio-pika (>=9.5.4,<10.0.0)",
-    "httpx (>=0.28.1,<0.29.0)",
-    "pydantic[email] (>=2.10.5,<3.0.0)",
-    "pyjwt (>=2.10.1,<3.0.0)",
-    "python-dotenv (>=1.0.1,<2.0.0)",
-    "pytest (>=8.3.4,<9.0.0)",
-    "starlette (>=0.37.2,<0.42.0)",
-    "cryptography (>=44.0.0,<45.0.0)",
-    "bcrypt (>=4.2.1,<5.0.0)",
+    "fastapi (>=0.115.11,<0.116.0)",
+    "bcrypt (>=4.3.0,<5.0.0)",
+    "jwt (>=1.3.1,<2.0.0)",
+    "dotenv (>=0.9.9,<0.10.0)",
+    "aio-pika (>=9.5.5,<10.0.0)"
 ]
 
 
